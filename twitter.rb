@@ -13,22 +13,21 @@ def request_access_token
   Launchy.open(authorize_url)
   puts "Login, and type your verification code in"
     oauth_verifier = gets.chomp
-  access_token = request_token.get_access_token(
-          :oauth_verifier => oauth_verifier)
+  request_token.get_access_token(:oauth_verifier => oauth_verifier)
 end
 
 class User
-  attr_accessor :real_name, :user_name
+  attr_accessor :user_name
 
-  def initialize(real_name, user_name)
-    @real_name, @user_name = real_name, user_name
+  def initialize(user_name)
+    @user_name = user_name
     @statuses = []
   end
 
   def dm(message)
   end
 
-  def self.timeline(access_token)
+  def User.timeline(access_token)
     access_token.get("http://api.twitter.com/1.1/statuses/user_timeline.json").body
   end
 end
@@ -36,9 +35,16 @@ end
 
 class Status
 
+  attr_accessor :user, :message
+
   def initialize(user, message)
     @user = user
     @message = message
   end
 
 end
+
+
+access_token = request_access_token
+p access_token
+p User.timeline(access_token)
