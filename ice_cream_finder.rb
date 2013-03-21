@@ -43,7 +43,15 @@ places_response["results"].each do |result|
   ice_cream_shops[ice_cream_shop_name] = ice_cream_shop_location
 end
 
-puts ice_cream_shops
+puts "Ice cream shop choices:"
+ice_cream_shops.keys.each_with_index do |shop_name, index|
+  puts "#{index} : #{shop_name}"
+end
+
+puts "Which number shop would you like directions to?"
+shop = gets.to_i
+
+p shop
 
 #step 3: get directions to ONE ice cream shop
 # (user selected?)
