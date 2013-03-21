@@ -33,8 +33,6 @@ places_request << "&sensor=false"
 places_request << "&keyword=ice+cream"
 places_request << "&type=food"
 
-puts places_request
-
 places_response = get_response(places_request)
 ice_cream_shops = {}
 places_response["results"].each do |result|
@@ -49,9 +47,28 @@ ice_cream_shops.keys.each_with_index do |shop_name, index|
 end
 
 puts "Which number shop would you like directions to?"
-shop = gets.to_i
+choice = gets.to_i
 
-p shop
+#step 3: get directions shop
+name = ice_cream_shops.keys[choice]
 
-#step 3: get directions to ONE ice cream shop
-# (user selected?)
+puts "Directions to #{name}:"
+
+dest_latlng = ice_cream_shops[name]
+
+p dest_latlng
+
+directions_request = "http://maps.googleapis.com/maps/api/directions/json"
+directions_request << "?origin=#{user_latlng['lat']},#{user_latlng['lng']}"
+directions_request << "&destination=#{dest_latlng['lat']},#{dest_latlng['lng']}"
+directions_request << "&sensor=false"
+directions_request << "&mode=walking"
+
+directions_result = get_response(directions_request)
+
+p directions_result
+
+
+
+
+
