@@ -6,32 +6,43 @@ require './secrets'
 CONSUMER = OAuth::Consumer.new(
   CONSUMER_KEY, CONSUMER_SECRET, :site => "https://twitter.com")
 
-def request_access_token
-  request_token = CONSUMER.get_request_token
-  authorize_url = request_token.authorize_url
-  puts "Go to this URL: #{authorize_url}"
-  Launchy.open(authorize_url)
-  puts "Login, and type your verification code in"
-    oauth_verifier = gets.chomp
-  request_token.get_access_token(:oauth_verifier => oauth_verifier)
-end
-
 class User
   attr_accessor :user_name
 
   def initialize(user_name)
     @user_name = user_name
-    @statuses = []
   end
 
-  def dm(message)
+  def statuses
+    EndUser.access_token.get("http://api.twitter.com/1.1/statuses/home_timeline.json").body
   end
 
-  def User.timeline(access_token)
-    access_token.get("http://api.twitter.com/1.1/statuses/user_timeline.json").body
+  def User.timeline
+    EndUser.access_token.get("http://api.twitter.com/1.1/statuses/user_timeline.json").body
   end
 end
 
+class EndUser < User
+
+  def self.access_token
+    @@access_token
+  end
+
+  def self.login(user_name)
+    request_token = CONSUMER.get_request_token
+    authorize_url = request_token.authorize_url
+    puts "Go to this URL: #{authorize_url}"
+    Launchy.open(authorize_url)
+    puts "Login, and type your verification code in"
+      oauth_verifier = gets.chomp
+    @@access_token = request_token.get_access_token(:oauth_verifier => oauth_verifier)
+  end
+
+  def dm(message)
+    p access_token.post("https://api.twitter.com/1.1/direct_messages/new.json")
+  end
+
+end
 
 class Status
 
@@ -45,6 +56,22 @@ class Status
 end
 
 
-access_token = request_access_token
-p access_token
-p User.timeline(access_token)
+
+# access_token = request_access_token
+# p access_token
+# p User.timeline(access_token)
+# User.new(Grumpy_Coworker)
+
+class Square
+  def initialize
+    if @@count
+      @@count += 1
+    else
+      @@count = 1
+    end
+  end
+
+  def self.count
+    @@count
+  end
+end
