@@ -1,6 +1,5 @@
 require 'launchy'
 require 'oauth'
-require 'yaml'
 require 'json'
 require 'addressable/uri'
 require './secrets'
@@ -24,13 +23,23 @@ class User
         :screen_name => @user_name
       }
     ).to_s
-    EndUser.access_token.get(request).body
+    response = EndUser.access_token.get(request).body
+    status_array = JSON.parse(response)
+    make_status_list(status_array)
+  end
+
+  def make_status_list(status_array)
+    list = []
+    status_array.each do |status|
+      status = Status.new(@user_name,status['text'])
+      list << status
+    end
+    list
   end
 
 end
 
 class EndUser < User
-
   def self.access_token
     @@access_token
   end
@@ -78,11 +87,9 @@ class EndUser < User
     ).to_s
     EndUser.access_token.post(tweet_status)
   end
-
 end
 
 class Status
-
   attr_accessor :user, :message
 
   def initialize(user, message)
@@ -90,11 +97,12 @@ class Status
     @message = message
   end
 
+  # def mentions
+  #   # @message.
+  # end
+  #
+  # def hashtags
+  # end
 end
 
 
-
-# access_token = request_access_token
-# p access_token
-# p User.timeline(access_token)
-# User.new(Grumpy_Coworker)
