@@ -24,8 +24,6 @@ class User
         :screen_name => @user_name
       }
     ).to_s
-    p request
-    p EndUser.access_token
     EndUser.access_token.get(request).body
   end
 
@@ -52,12 +50,33 @@ class EndUser < User
     @@current_user = EndUser.new(user_name)
   end
 
-  def dm(message)
-    p access_token.post("https://api.twitter.com/1.1/direct_messages/new.json")
-  end
-
   def timeline
     EndUser.access_token.get("http://api.twitter.com/1.1/statuses/home_timeline.json").body
+  end
+
+  def dm(target_user, message)
+    post_message = Addressable::URI.new(
+      :scheme => "https",
+      :host => "api.twitter.com",
+      :path => "1.1/direct_messages/new.json",
+      :query_values => {
+        :text => message,
+        :screen_name => @user_name
+      }
+    ).to_s
+    EndUser.access_token.post(post_message)
+  end
+
+  def tweet(message)
+    tweet_status = Addressable::URI.new(
+      :scheme => "https",
+      :host => "api.twitter.com",
+      :path => "1.1/statuses/update.json",
+      :query_values => {
+        :status => message
+      }
+    ).to_s
+    EndUser.access_token.post(tweet_status)
   end
 
 end
@@ -79,17 +98,3 @@ end
 # p access_token
 # p User.timeline(access_token)
 # User.new(Grumpy_Coworker)
-
-class Square
-  def initialize
-    if @@count
-      @@count += 1
-    else
-      @@count = 1
-    end
-  end
-
-  def self.count
-    @@count
-  end
-end
