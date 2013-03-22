@@ -13,6 +13,7 @@ end
 puts "Enter your location and I'll find you good ice cream."
 # user_address = gets.chomp.gsub(' ', '+')
 user_address = "160 Folsom St San Fransicso 94105".gsub(' ', '+')
+# REV: Addressable:URI does the + to space conversion for you
 
 request = Addressable::URI.new(
   :scheme => "http",
@@ -26,6 +27,7 @@ request = Addressable::URI.new(
 response = get_response(request)
 
 user_latlng = response['results'][0]['geometry']['location']
+# REV: Recommend to define lat and lng separately
 places_request = Addressable::URI.new(
   :scheme => "https",
   :host => "maps.googleapis.com",
@@ -55,6 +57,7 @@ end
 
 puts "Which number shop would you like directions to?"
 choice = gets.to_i
+#REV: Needs an error check in case a user enters a non-number or a #number that is out of range (Google returns up to 20 values)
 name = ice_cream_shops.keys[choice]
 puts "Directions to #{name}:"
 dest_latlng = ice_cream_shops[name]

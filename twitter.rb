@@ -6,6 +6,7 @@ require './secrets'
 
 CONSUMER = OAuth::Consumer.new(
   CONSUMER_KEY, CONSUMER_SECRET, :site => "https://twitter.com")
+  # REV: Top 2 lines can be refactored into an Oauth_Loader class
 
 class User
   attr_accessor :user_name
@@ -20,7 +21,7 @@ class User
       :host => "api.twitter.com",
       :path => "/1.1/statuses/user_timeline.json",
       :query_values => {
-        :screen_name => @user_name
+        :screen_name => @user_name # REV: Use your user_name getter
       }
     ).to_s
     response = EndUser.access_token.get(request).body
@@ -29,6 +30,7 @@ class User
   end
 
   def make_status_list(status_array)
+  # REV: Method name should be 'status_list'; that's what it returns
     list = []
     status_array.each do |status|
       status = Status.new(@user_name,status['text'])
@@ -40,6 +42,9 @@ class User
 end
 
 class EndUser < User
+
+  # REV: @@access_token can be declared & set to nil here (optional)
+
   def self.access_token
     @@access_token
   end
@@ -55,6 +60,7 @@ class EndUser < User
     Launchy.open(authorize_url)
     puts "Login, and type your verification code in"
       oauth_verifier = gets.chomp
+    # REV: The first part of this method could be refactored into an Oauth_Loader class.
     @@access_token = request_token.get_access_token(:oauth_verifier => oauth_verifier)
     @@current_user = EndUser.new(user_name)
   end
