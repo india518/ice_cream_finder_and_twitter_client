@@ -35,6 +35,7 @@ class User
       list << status
     end
     list
+    #REV Don't forget to output to user! :)
   end
 
 end
@@ -104,5 +105,5 @@ class Status
   # def hashtags
   # end
 end
-
+#REV: Looks good!
 

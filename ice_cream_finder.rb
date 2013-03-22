@@ -9,10 +9,12 @@ def get_response(request)
   response_str = RestClient.get(request.to_s)
   JSON.parse(response_str)
 end
+#REV Nice job of extracting this out to a function
 
 puts "Enter your location and I'll find you good ice cream."
 # user_address = gets.chomp.gsub(' ', '+')
 user_address = "160 Folsom St San Fransicso 94105".gsub(' ', '+')
+#REV Might consider using a reg ex for /\s/+ to account for multiple spaces
 
 request = Addressable::URI.new(
   :scheme => "http",
